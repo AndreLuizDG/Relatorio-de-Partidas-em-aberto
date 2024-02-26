@@ -1,6 +1,6 @@
 REPORT z_algj_40.
 
-* Declara��es
+* Declara##es
 TABLES: bkpf.
 
 TYPES:
@@ -86,13 +86,70 @@ DATA:
   wa_sort       TYPE slis_sortinfo_alv,
   wa_listheader TYPE slis_listheader.
 
+CONSTANTS:
+  c_x                     TYPE char1         VALUE 'X',
+  c_s                     TYPE char1         VALUE 'S',
+  c_e                     TYPE char1         VALUE 'E',
+  c_separador1            TYPE char1         VALUE '/',
+  c_separador2            TYPE char1         VALUE ':',
+  c_separador3            TYPE char1         VALUE ';',
+  c_dr                    TYPE char2         VALUE 'DR',
+  c_kr                    TYPE char2         VALUE 'KR',
+  c_buk                   TYPE char3         VALUE 'BUK',
+  c_bln                   TYPE char3         VALUE 'BLN',
+  c_gjr                   TYPE char3         VALUE 'GJR',
+  c_txt                   TYPE char3         VALUE 'TXT',
+  c_csv                   TYPE char3         VALUE 'CSV',
+  c_asc                   TYPE char1         VALUE 'ASC',
+  c_ano                   TYPE char3         VALUE 'Ano',
+  c_3000                  TYPE char4         VALUE '3000',
+  c_2008                  TYPE char4         VALUE '2008',
+  c_fb03                  TYPE char4         VALUE 'FB03',
+  c_mark                  TYPE char4         VALUE 'MARK',
+  c_bsid                  TYPE char4         VALUE 'BSID',
+  c_bsik                  TYPE char4         VALUE 'BSIK',
+  c_bukrs                 TYPE char5         VALUE 'BUKRS',
+  c_lifnr                 TYPE char5         VALUE 'LIFNR',
+  c_gjahr                 TYPE char5         VALUE 'GJAHR',
+  c_belnr                 TYPE char5         VALUE 'BELNR',
+  c_buzei                 TYPE char5         VALUE 'BUZEI',
+  c_blart                 TYPE char5         VALUE 'BLART',
+  c_budat                 TYPE char5         VALUE 'BUDAT',
+  c_waers                 TYPE char5         VALUE 'WAERS',
+  c_monat                 TYPE char5         VALUE 'MONAT',
+  c_bschl                 TYPE char5         VALUE 'BSCHL',
+  c_dmbtr                 TYPE char5         VALUE 'DMBTR',
+  c_kunnr                 TYPE char5         VALUE 'KUNNR',
+  c_cliente               TYPE char7         VALUE 'cliente',
+  c_empresa               TYPE char7         VALUE 'Empresa',
+  c_moeda                 TYPE char5         VALUE 'Moeda',
+  c_ti_saida              TYPE char8         VALUE 'TI_SAIDA',
+  c_montante              TYPE char8         VALUE 'Montante',
+  c_n_linha               TYPE char8         VALUE 'N° Linha',
+  c_fornecedor            TYPE char10        VALUE 'Fornecedor',
+  c_n_documento           TYPE char12        VALUE 'N° documento',
+  c_gui_status_38         TYPE char13        VALUE 'GUI_STATUS_38',
+  c_mes_do_exercicio      TYPE char16        VALUE 'Mês do exercício',
+  c_tipo_de_documento     TYPE char17        VALUE 'Tipo de Documento',
+  c_data_de_lancamento    TYPE char18        VALUE 'Data de lançamento',
+  c_chave_de_lancamento   TYPE char19        VALUE 'Chave de Lançamento',
+  c_partidas_clientes     TYPE char30        VALUE 'Partidas em Aberto de Clientes',
+  c_partidas_fornecedores TYPE char34        VALUE 'Partidas em Aberto de Fornecedores',
+  c_path_txt_clientes     TYPE char64        VALUE 'C:\Users\André LGJ\Desktop\Partidas de Clientes.TXT',
+  c_path_csv_clientes     TYPE char64        VALUE 'C:\Users\André LGJ\Desktop\Partidas de Clientes.CSV',
+  c_path_txt_fornecedores TYPE char64        VALUE 'C:\Users\André LGJ\Desktop\Partidas de Fornecedores.TXT',
+  c_path_csv_fornecedores TYPE char64        VALUE 'C:\Users\André LGJ\Desktop\Partidas de Fornecedores.CSV',
+  c_z_user_command        TYPE slis_formname VALUE 'Z_USER_COMMAND',
+  c_zf_top_of_page        TYPE slis_formname VALUE 'ZF_TOP_OF_PAGE',
+  c_zf_status             TYPE slis_formname VALUE 'ZF_STATUS'.
+
 * Tela
 
-SELECTION-SCREEN: BEGIN OF BLOCK b1 WITH FRAME TITLE text-001. "Tela de sele��o
-PARAMETERS     p_bukrs TYPE bkpf-bukrs DEFAULT '3000'. "Empresa
-SELECT-OPTIONS s_belnr FOR  bkpf-belnr.                 "N. Documento
-PARAMETERS:    p_gjahr TYPE bkpf-gjahr DEFAULT '2008', "Ano
-               p_kunnr RADIOBUTTON GROUP b1,              "Cliente
+SELECTION-SCREEN:       BEGIN OF BLOCK b1 WITH FRAME TITLE text-001. "Tela de seleção
+PARAMETERS     p_bukrs TYPE bkpf-bukrs DEFAULT c_3000. "Empresa
+SELECT-OPTIONS s_belnr FOR  bkpf-belnr.                "N. Documento
+PARAMETERS:    p_gjahr TYPE bkpf-gjahr DEFAULT c_2008, "Ano
+               p_kunnr RADIOBUTTON GROUP b1,           "Cliente
                p_lifnr RADIOBUTTON GROUP b1.           "Fornecedor
 SELECTION-SCREEN: END OF BLOCK b1.
 
@@ -129,7 +186,7 @@ FORM zf_seleciona_dados.
     IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
 
       LOOP AT ti_bkpf INTO wa_bkpf.
-        IF wa_bkpf-blart <> 'DR'.
+        IF wa_bkpf-blart <> c_dr.
           DELETE ti_bkpf INDEX sy-tabix.
         ENDIF.
       ENDLOOP.
@@ -137,7 +194,7 @@ FORM zf_seleciona_dados.
     ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
 
       LOOP AT ti_bkpf INTO wa_bkpf.
-        IF wa_bkpf-blart <> 'KR'.
+        IF wa_bkpf-blart <> c_kr.
           DELETE ti_bkpf INDEX sy-tabix.
         ENDIF.
       ENDLOOP.
@@ -147,7 +204,7 @@ FORM zf_seleciona_dados.
   ELSE.
 
     FREE ti_bkpf.
-    MESSAGE 'Dados n�o encontrados' TYPE 'S' DISPLAY LIKE 'E'.
+    MESSAGE text-e01 TYPE c_s DISPLAY LIKE c_e. "Dados não encontrados!
     LEAVE LIST-PROCESSING.
 
   ENDIF. "  IF sy-subrc = 0.
@@ -197,7 +254,7 @@ FORM zf_seleciona_dados.
     IF sy-subrc <> 0.
 
       FREE ti_bsid.
-      MESSAGE 'Dados n�o encontrados' TYPE 'S' DISPLAY LIKE 'E'.
+      MESSAGE text-e01 TYPE c_s DISPLAY LIKE c_e. "Dados não encontrados!
       LEAVE LIST-PROCESSING.
 
     ENDIF. "    IF sy-subrc <> 0.
@@ -228,12 +285,12 @@ FORM zf_seleciona_dados.
     IF sy-subrc <> 0.
 
       FREE ti_bsik.
-      MESSAGE 'Dados n�o encontrados' TYPE 'S' DISPLAY LIKE 'E'.
+      MESSAGE text-e01 TYPE c_s DISPLAY LIKE c_e. "Dados não encontrados!
       LEAVE LIST-PROCESSING.
 
     ENDIF. "   IF sy-subrc <> 0.
 
-  ENDIF. "Valida��o de cliente ou fornecedor
+  ENDIF. "Valida##o de cliente ou fornecedor
 
 ENDFORM.
 
@@ -346,32 +403,32 @@ FORM zf_monta_alv.
   IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
 
     PERFORM zf_monta_fieldcat USING:
-       'BUKRS'      'TI_SAIDA'  'BUKRS'      'BSID'  ''   ''   '',
-       'KUNNR'      'TI_SAIDA'  'KUNNR'      'BSID'  ''   ''   '',
-       'GJAHR'      'TI_SAIDA'  'GJAHR'      'BSID'  ''   ''   '',
-       'BELNR'      'TI_SAIDA'  'BELNR'      'BSID'  ''   ''   '',
-       'BUZEI'      'TI_SAIDA'  'BUZEI'      'BSID'  ''   ''   '',
-       'BLART'      'TI_SAIDA'  'BLART'      'BSID'  ''   ''   '',
-       'BUDAT'      'TI_SAIDA'  'BUDAT'      'BSID'  ''   ''   '',
-       'WAERS'      'TI_SAIDA'  'WAERS'      'BSID'  ''   ''   'X',
-       'MONAT'      'TI_SAIDA'  'MONAT'      'BSID'  ''   ''   'X',
-       'BSCHL'      'TI_SAIDA'  'BSCHL'      'BSID'  ''   ''   'X',
-       'DMBTR'      'TI_SAIDA'  'DMBTR'      'BSID'  ''   'X'  ''.
+       c_bukrs   c_ti_saida   c_bukrs   c_bsid   ''   ''    '',
+       c_kunnr   c_ti_saida   c_kunnr   c_bsid   ''   ''    '',
+       c_gjahr   c_ti_saida   c_gjahr   c_bsid   ''   ''    '',
+       c_belnr   c_ti_saida   c_belnr   c_bsid   ''   ''    '',
+       c_buzei   c_ti_saida   c_buzei   c_bsid   ''   ''    '',
+       c_blart   c_ti_saida   c_blart   c_bsid   ''   ''    '',
+       c_budat   c_ti_saida   c_budat   c_bsid   ''   ''    '',
+       c_waers   c_ti_saida   c_waers   c_bsid   ''   ''    c_x,
+       c_monat   c_ti_saida   c_monat   c_bsid   ''   ''    c_x,
+       c_bschl   c_ti_saida   c_bschl   c_bsid   ''   ''    c_x,
+       c_dmbtr   c_ti_saida   c_dmbtr   c_bsid   ''   c_x   ''.
 
   ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
 
     PERFORM zf_monta_fieldcat USING:
-       'BUKRS'       'TI_SAIDA'  'BUKRS'     'BSIK'  ''   ''   '',
-       'LIFNR'      'TI_SAIDA'  'LIFNR'      'BSIK'  ''   ''   '',
-       'GJAHR'      'TI_SAIDA'  'GJAHR'      'BSIK'  ''   ''   '',
-       'BELNR'      'TI_SAIDA'  'BELNR'      'BSIK'  ''   ''   '',
-       'BUZEI'      'TI_SAIDA'  'BUZEI'      'BSIK'  ''   ''   '',
-       'BLART'      'TI_SAIDA'  'BLART'      'BSIK'  ''   ''   '',
-       'BUDAT'      'TI_SAIDA'  'BUDAT'      'BSIK'  ''   ''   '',
-       'WAERS'      'TI_SAIDA'  'WAERS'      'BSIK'  ''   ''   'X',
-       'MONAT'      'TI_SAIDA'  'MONAT'      'BSIK'  ''   ''   'X',
-       'BSCHL'      'TI_SAIDA'  'BSCHL'      'BSIK'  ''   ''   'X',
-       'DMBTR'      'TI_SAIDA'  'DMBTR'      'BSIK'  ''   'X'  ''.
+       c_bukrs   c_ti_saida   c_bukrs   c_bsik   ''   ''    '',
+       c_lifnr   c_ti_saida   c_lifnr   c_bsik   ''   ''    '',
+       c_gjahr   c_ti_saida   c_gjahr   c_bsik   ''   ''    '',
+       c_belnr   c_ti_saida   c_belnr   c_bsik   ''   ''    '',
+       c_buzei   c_ti_saida   c_buzei   c_bsik   ''   ''    '',
+       c_blart   c_ti_saida   c_blart   c_bsik   ''   ''    '',
+       c_budat   c_ti_saida   c_budat   c_bsik   ''   ''    '',
+       c_waers   c_ti_saida   c_waers   c_bsik   ''   ''    c_x,
+       c_monat   c_ti_saida   c_monat   c_bsik   ''   ''    c_x,
+       c_bschl   c_ti_saida   c_bschl   c_bsik   ''   ''    c_x,
+       c_dmbtr   c_ti_saida   c_dmbtr   c_bsik   ''   c_x   ''.
 
   ENDIF.
 
@@ -381,24 +438,24 @@ FORM zf_sort_subtotal.
 
   FREE ti_sort.
   CLEAR   wa_sort.
-  wa_sort-spos      = 1.       "Pos�c�o na ordena��o
-  wa_sort-fieldname = 'BUKRS'. "Campo a ser ordenado
-  wa_sort-tabname   = 'TI_SAIDA'. "Tabela interna do alv
-  wa_sort-up        = 'X'.     "Ordena��o crescente
-  wa_sort-subtot    = 'X'.     "Exibir subtotais
+  wa_sort-spos      = 1.
+  wa_sort-fieldname = c_bukrs.
+  wa_sort-tabname   = c_ti_saida.
+  wa_sort-up        = c_x.
+  wa_sort-subtot    = c_x.
   APPEND wa_sort TO ti_sort.
 
   CLEAR   wa_sort.
-  wa_sort-spos      = 2.       "Pos�c�o na ordena��o
+  wa_sort-spos      = 2.
 
-  IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
-    wa_sort-fieldname = 'KUNNR'. "Campo a ser ordenado
-  ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
-    wa_sort-fieldname = 'LIFNR'. "Campo a ser ordenado
+  IF p_kunnr IS NOT INITIAL.
+    wa_sort-fieldname = c_kunnr.
+  ELSEIF p_lifnr IS NOT INITIAL.
+    wa_sort-fieldname = c_lifnr.
   ENDIF.
-  wa_sort-tabname   = 'TI_SAIDA'. "Tabela interna do alv
-  wa_sort-up        = 'X'.     "Ordena��o crescente
-  wa_sort-subtot    = 'X'.     "Exibir subtotais
+  wa_sort-tabname   = c_ti_saida.
+  wa_sort-up        = c_x.
+  wa_sort-subtot    = c_x.
   APPEND wa_sort TO ti_sort.
 
 ENDFORM.
@@ -407,57 +464,22 @@ FORM zf_exibe_alv.
 
   DATA: wa_layout TYPE slis_layout_alv.
 
-  wa_layout-box_fieldname     = 'MARK'.
+  wa_layout-box_fieldname     = c_mark.
 
   CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
     EXPORTING
-*     I_INTERFACE_CHECK        = ' '
-*     I_BYPASSING_BUFFER       = ' '
-*     I_BUFFER_ACTIVE          = ' '
       i_callback_program       = sy-repid
-      i_callback_pf_status_set = 'ZF_STATUS'
-      i_callback_user_command  = 'Z_USER_COMMAND'
-      i_callback_top_of_page   = 'ZF_TOP_OF_PAGE'
-*     I_CALLBACK_HTML_TOP_OF_PAGE       = ' '
-*     I_CALLBACK_HTML_END_OF_LIST       = ' '
-*     I_STRUCTURE_NAME         =
-*     I_BACKGROUND_ID          = ' '
-*     I_GRID_TITLE             =
-*     I_GRID_SETTINGS          =
+      i_callback_pf_status_set = c_zf_status
+      i_callback_user_command  = c_z_user_command
+      i_callback_top_of_page   = c_zf_top_of_page
       is_layout                = wa_layout
       it_fieldcat              = ti_fieldcat
-*     IT_EXCLUDING             =
-*     IT_SPECIAL_GROUPS        =
       it_sort                  = ti_sort
-*     IT_FILTER                =
-*     IS_SEL_HIDE              =
-*     I_DEFAULT                = 'X'
-*     I_SAVE                   = ' '
-*     IS_VARIANT               =
-*     IT_EVENTS                =
-*     IT_EVENT_EXIT            =
-*     IS_PRINT                 =
-*     IS_REPREP_ID             =
-*     I_SCREEN_START_COLUMN    = 0
-*     I_SCREEN_START_LINE      = 0
-*     I_SCREEN_END_COLUMN      = 0
-*     I_SCREEN_END_LINE        = 0
-*     I_HTML_HEIGHT_TOP        = 0
-*     I_HTML_HEIGHT_END        = 0
-*     IT_ALV_GRAPHICS          =
-*     IT_HYPERLINK             =
-*     IT_ADD_FIELDCAT          =
-*     IT_EXCEPT_QINFO          =
-*     IR_SALV_FULLSCREEN_ADAPTER        =
-* IMPORTING
-*     E_EXIT_CAUSED_BY_CALLER  =
-*     ES_EXIT_CAUSED_BY_USER   =
     TABLES
       t_outtab                 = ti_saida
-* EXCEPTIONS
-*     PROGRAM_ERROR            = 1
-*     OTHERS                   = 2
-    .
+    EXCEPTIONS
+      program_error            = 1
+      OTHERS                   = 2.
   IF sy-subrc <> 0.
 * Implement suitable error handling here
   ENDIF.
@@ -474,29 +496,29 @@ FORM zf_top_of_page.
   FREE ti_listheader.
 
   CONCATENATE sy-datum+6(2)
-              sy-datum+4(2)    "05/12/2023D
+              sy-datum+4(2)
               sy-datum+0(4)
-             INTO  data SEPARATED BY '/'.
+             INTO  data SEPARATED BY c_separador1.
 
   CONCATENATE sy-uzeit+0(2)
               sy-uzeit+2(2)
-             INTO hora SEPARATED BY ':'.
+             INTO hora SEPARATED BY c_separador2.
 
   CONCATENATE data hora INTO timestamp SEPARATED BY space.
 
   IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
 
     CLEAR wa_listheader.
-    wa_listheader-typ  = 'S'.
-    wa_listheader-info = 'Partidas em Aberto de Clientes'.
+    wa_listheader-typ  = c_s.
+    wa_listheader-info = c_partidas_clientes.
     APPEND wa_listheader TO ti_listheader.
     FREE wa_listheader.
 
   ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
 
     CLEAR wa_listheader.
-    wa_listheader-typ  = 'S'.
-    wa_listheader-info = 'Partidas em Aberto de Fornecedores'.
+    wa_listheader-typ  = c_s.
+    wa_listheader-info = c_partidas_fornecedores.
     APPEND wa_listheader TO ti_listheader.
     FREE wa_listheader.
 
@@ -504,7 +526,7 @@ FORM zf_top_of_page.
 
   CLEAR wa_listheader.
   CLEAR wa_listheader.
-  wa_listheader-typ  = 'S'.
+  wa_listheader-typ  = c_s.
   wa_listheader-info = timestamp.
   APPEND wa_listheader TO ti_listheader.
   FREE wa_listheader.
@@ -519,32 +541,32 @@ ENDFORM.
 FORM z_user_command USING vl_ucomm LIKE sy-ucomm
                   rs_selfield TYPE slis_selfield.
 
-  rs_selfield-refresh = 'X'.
+  rs_selfield-refresh = c_x.
 
   CASE vl_ucomm.
 
-    WHEN 'CSV'.
+    WHEN c_csv.
 
       PERFORM zf_montar_csv.
 
-    WHEN 'TXT'.
+    WHEN c_txt.
 
       PERFORM zf_montar_txt.
 
     WHEN OTHERS.
 
-      IF rs_selfield-fieldname = 'BELNR'.
-        SET PARAMETER ID 'BUK'  FIELD wa_saida-bukrs.
-        SET PARAMETER ID 'BLN'  FIELD wa_saida-belnr.
-        SET PARAMETER ID 'GJR'  FIELD wa_saida-gjahr.
-        CALL TRANSACTION 'FB03' AND SKIP FIRST SCREEN.
+      IF rs_selfield-fieldname = c_belnr.
+        SET PARAMETER ID c_buk  FIELD wa_saida-bukrs.
+        SET PARAMETER ID c_bln  FIELD wa_saida-belnr.
+        SET PARAMETER ID c_gjr  FIELD wa_saida-gjahr.
+        CALL TRANSACTION c_fb03 AND SKIP FIRST SCREEN.
       ENDIF.
   ENDCASE.
 
 ENDFORM.
 
 FORM zf_status USING pf_tab TYPE slis_t_extab.
-  SET PF-STATUS 'GUI_STATUS_40'.
+  SET PF-STATUS c_gui_status_38.
 ENDFORM.
 
 FORM zf_montar_csv.
@@ -558,24 +580,23 @@ FORM zf_montar_csv.
   IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
 
     CLEAR wa_saida_csv.
-    CONCATENATE  'Empresa'
-                 'Cliente'
-                 'Ano'
-                 'N� documento'
-                 'N� Linha'
-                 'Tipo de Documento'
-                 'Data de lan�amento'
-                 'Moeda'
-                 'M�s do exerc�cio'
-                 'Chave de Lan�amento'
-                 'Montante'
-
+    CONCATENATE  c_empresa
+                 c_cliente
+                 c_ano
+                 c_n_documento
+                 c_n_linha
+                 c_tipo_de_documento
+                 c_data_de_lancamento
+                 c_moeda
+                 c_mes_do_exercicio
+                 c_chave_de_lancamento
+                 c_montante
     INTO wa_saida_csv
-    SEPARATED BY ';'.
+    SEPARATED BY c_separador3.
 
     APPEND wa_saida_csv TO ti_saida_csv.
 
-    LOOP AT ti_saida INTO wa_saida WHERE mark = 'X'.
+    LOOP AT ti_saida INTO wa_saida WHERE mark = c_x.
 
       lv_dmbtr = wa_saida-dmbtr.
 
@@ -593,7 +614,7 @@ FORM zf_montar_csv.
                    lv_dmbtr
 
       INTO wa_saida_csv
-      SEPARATED BY ';'.
+      SEPARATED BY c_separador3.
 
       APPEND wa_saida_csv TO ti_saida_csv.
 
@@ -603,24 +624,23 @@ FORM zf_montar_csv.
   ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
 
     CLEAR wa_saida_csv.
-    CONCATENATE  'Empresa'
-                 'Fornecedor'
-                 'Ano'
-                 'N� documento'
-                 'N� Linha'
-                 'Tipo de Documento'
-                 'Data de lan�amento'
-                 'Moeda'
-                 'M�s do exerc�cio'
-                 'Chave de Lan�amento'
-                 'Montante'
-
+    CONCATENATE  c_empresa
+                 c_fornecedor
+                 c_ano
+                 c_n_documento
+                 c_n_linha
+                 c_tipo_de_documento
+                 c_data_de_lancamento
+                 c_moeda
+                 c_mes_do_exercicio
+                 c_chave_de_lancamento
+                 c_montante
     INTO wa_saida_csv
-    SEPARATED BY ';'.
+    SEPARATED BY c_separador3.
 
     APPEND wa_saida_csv TO ti_saida_csv.
 
-    LOOP AT ti_saida INTO wa_saida WHERE mark = 'X'.
+    LOOP AT ti_saida INTO wa_saida WHERE mark = c_x.
 
       lv_dmbtr = wa_saida-dmbtr.
 
@@ -638,7 +658,7 @@ FORM zf_montar_csv.
                    lv_dmbtr
 
       INTO wa_saida_csv
-      SEPARATED BY ';'.
+      SEPARATED BY c_separador3.
 
       APPEND wa_saida_csv TO ti_saida_csv.
 
@@ -648,17 +668,15 @@ FORM zf_montar_csv.
   ENDIF.   "IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
 
   IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
-    lv_caminho = 'C:\Users\Andr� LGJ\Desktop\Partidas de Clientes.CSV'.
+    lv_caminho = c_path_csv_clientes.
   ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
-    lv_caminho = 'C:\Users\Andr� LGJ\Desktop\Partidas de Fornecedores.CSV'.
+    lv_caminho = c_path_csv_fornecedores.
   ENDIF.
 
-
-* Fun��o para baixar o CSV
   CALL FUNCTION 'GUI_DOWNLOAD'
     EXPORTING
       filename                = lv_caminho
-      filetype                = 'ASC'
+      filetype                = c_asc
     TABLES
       data_tab                = ti_saida_csv
     EXCEPTIONS
@@ -686,7 +704,7 @@ FORM zf_montar_csv.
       OTHERS                  = 22.
 
   IF sy-subrc <> 0.
-    MESSAGE 'Erro ao salvar o arquivo!' TYPE 'S' DISPLAY LIKE 'E'.
+    MESSAGE text-e02 TYPE c_s DISPLAY LIKE c_e. "Erro ao salvar o arquivo!
     LEAVE LIST-PROCESSING.
   ENDIF.
 
@@ -699,12 +717,12 @@ FORM zf_montar_txt.
 
   ti_saida_aux = ti_saida.
 
-  DELETE ti_saida_aux WHERE mark <> 'X'.
+  DELETE ti_saida_aux WHERE mark <> c_x.
 
   IF p_kunnr IS NOT INITIAL. "Caso o radiobutton Cliente estiver marcado
-    lv_caminho = 'C:\Users\Andr� LGJ\Desktop\Partidas de Clientes.TXT'.
+    lv_caminho = c_path_txt_clientes.
   ELSEIF p_lifnr IS NOT INITIAL. "ou se o radiobutton Fornecedor estiver marcado
-    lv_caminho = 'C:\Users\Andr� LGJ\Desktop\Partidas de Fornecedores.TXT'.
+    lv_caminho = c_path_txt_fornecedores.
   ENDIF.
 
   CALL FUNCTION 'GUI_DOWNLOAD'
@@ -736,7 +754,7 @@ FORM zf_montar_txt.
       control_flush_error     = 21
       OTHERS                  = 22.
   IF sy-subrc <> 0.
-    MESSAGE 'Erro ao salvar o arquivo!' TYPE 'S' DISPLAY LIKE 'E'.
+    MESSAGE text-e02 TYPE c_s DISPLAY LIKE c_e. "Erro ao salvar o arquivo!
   ENDIF.
 
 ENDFORM.
